@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+<body>
+    <header>
+        <h1>Aidols Benchmark Prototype</h1>
+    </header>
+    <main>
+        <section id="config">
+            <h2>Teste de Estresse</h2>
+            <form id="stress-form">
+                <span>
+                    <label>Requisições: </label>
+                    <input type="number" name="requests" value="1000" step="1" min="1">
+                </span>
+                <button>Estressar</button>
+            </form>
+        </section>
+        <style>
+            #results {
+                display: flex;
+                justify-content: start;
+                flex-grow: 1;
+                --contrast: var(--dark-blue);
+                border: 2px solid var(--contrast);
+                color: var(--contrast);
+                background-color: var(--light-blue);
+            }
+
+            #results[disabled] {
+                display: none;
+            }
+        </style>
+        <section id="results" disabled>
+            <h3>Resultados</h3>
+        </section>
+    </main>
+    <script src="./index.js"></script>
+</body>
+</html>
