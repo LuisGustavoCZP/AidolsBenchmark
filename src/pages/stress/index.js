@@ -71,7 +71,7 @@ async function checkResult (id)
     totalTimeText.textContent = `Tempo total: ${totalTime} ms`;
 
     const averageTimeText = document.createElement("span");
-    const averageTime = totalTime / response.data.results.length;
+    const averageTime = response.data.results.reduce((t, result) => t+=result.time, 0) / response.data.results.length;
     averageTimeText.textContent = `Média por teste: ${averageTime} ms`;
 
     timeSpan.innerHTML = "";
@@ -148,7 +148,7 @@ function renderGraph (results, totalTime)
     const labels = intervalTs.map(interval => `${interval.start}ms`);
     const datas = intervalTs.map(interval => `${interval.values.length}`);
 
-    console.log("Graph", results, intervalTs, labels, datas)
+    //console.log("Graph", results, intervalTs, labels, datas)
 
     if(chart) chart.destroy();
     chart = new Chart(ctx, {
@@ -179,7 +179,7 @@ function renderGraph (results, totalTime)
                         display: true,
                         text: 'Requisições'
                     },
-                    suggestedMax: results.length/totalIntervals
+                    suggestedMax: results.length / totalIntervals
                 }
             },
             width: "800px",
