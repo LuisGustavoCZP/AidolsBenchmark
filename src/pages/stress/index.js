@@ -3,6 +3,9 @@
 const form = document.getElementById("stress-form");
 const resultsSection = document.getElementById("results");
 const timeSpan = document.getElementById("time-span");
+const ctx = document.getElementById('myChart');
+let chart;
+let resultUL;
 
 /**
  * 
@@ -19,16 +22,16 @@ async function onSubmit (e)
         "Content-Type": "application/json",
     }
 
+    resultsSection.setAttribute("disabled", true);
+    form.setAttribute("disabled", true);
+
     const response = await fetch("/api/stress", {method: "POST", headers, body: JSON.stringify(body)}).then(res => res.json());
 
     console.log(response);
 
     const id = response.data.id;
 
-    form.setAttribute("disabled", true);
-
     checkResult(id);
-    //form.style = "display: none;";
 }
 
 /**
@@ -49,7 +52,8 @@ async function checkResult (id)
         await new Promise((resolve) => setTimeout(resolve, 1000));
     } while (response.data.status != "completed");
 
-    const ul = document.createElement("ol");
+    if(resultUL) resultUL.remove();
+    resultUL = document.createElement("ol");
 
     const results = response.data.results.map((result, index) => {
         result.index = index;
@@ -59,7 +63,7 @@ async function checkResult (id)
 
     const resultList = results.map(result => renderResult(result));
 
-    ul.append(...resultList);
+    resultUL.append(...resultList);
 
     const totalTimeText = document.createElement("span");
     
@@ -70,13 +74,14 @@ async function checkResult (id)
     const averageTime = totalTime / response.data.results.length;
     averageTimeText.textContent = `Média por teste: ${averageTime} ms`;
 
+    timeSpan.innerHTML = "";
     timeSpan.appendChild(totalTimeText);
     timeSpan.appendChild(averageTimeText);
 
-    resultsSection.appendChild(ul);
+    resultsSection.appendChild(resultUL);
 
     resultsSection.removeAttribute("disabled");
-
+    form.removeAttribute("disabled");
     renderGraph(response.data.results, totalTime);
 }
 
@@ -119,38 +124,39 @@ function renderResult (result)
  */
 function renderGraph (results, totalTime)
 {
-    const ctx = document.getElementById('myChart');
+    const totalIntervals = 20;
+    const intervalTime = Math.round(totalTime / totalIntervals);
 
-    const intervalTime = totalTime / 20;
-    /* results.sort((a, b) => {
-        if(a.time < b.time) return -1;
-        else if(a.time > b.time) return 1;
-        else if(a.time == b.time) return 0;
-    }); */
-
-    let intervals = new Array(20);
-    intervals = intervals.map((it, index) => {
+    const intervalTs = new Array(totalIntervals+1);
+    for (let index = 0; index < totalIntervals; index++)
+    {
         const start = index * intervalTime;
         const end = (index+1) * intervalTime;
-        const interval = {
+
+        intervalTs[index] = {
             start: start,
             end: end,
             values: results.filter(result => result.time >= start && result.time < end)
-        }
-        return interval;
-    });
+        };
+    }
+    intervalTs[totalIntervals] = {
+        start: totalTime,
+        end: totalTime,
+        values: []
+    };
 
-    const labels = intervals.map(interval => `${interval.start}`);
-    const datas = intervals.map(interval => `${interval.values.lenght}`);
+    const labels = intervalTs.map(interval => `${interval.start}ms`);
+    const datas = intervalTs.map(interval => `${interval.values.length}`);
 
-    console.log("Graph", labels, datas)
+    console.log("Graph", results, intervalTs, labels, datas)
 
-    new Chart(ctx, {
+    if(chart) chart.destroy();
+    chart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
             datasets: [{
-                label: 'Indice',
+                label: 'Requests',
                 data: datas,
                 borderWidth: 1
             }]
@@ -158,11 +164,26 @@ function renderGraph (results, totalTime)
         options: {
             responsive: true,
             scales: {
-                y: {
-                    beginAtZero: true
+                x: {
+                    beginAtZero: true,
+                    display: true,
+                    title: {
+                        display: true,
+                        text: 'Tempo'
+                    }
                 },
+                y: {
+                    beginAtZero: true,
+                    display: true,
+                    title: {
+                        display: true,
+                        text: 'Requisições'
+                    },
+                    suggestedMax: results.length/totalIntervals
+                }
             },
-            width: "500px"
+            width: "800px",
+            height: "500px",
         }
     });
 }
