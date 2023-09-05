@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="/main.css">
+    <script src="../chart.umd.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+    <!-- <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js" integrity="sha512-7U4rRB8aGAHGVad3u2jiC7GA5/1YhQcQjxKeaVms/bT66i3LVBMRcBI9KwABNWnxOSwulkuSXxZLGuyfvo7V1A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+    <!-- <script src="../path/to/chartjs/dist/chart.umd.js"></script> -->
 </head>
 <body>
     <header>
@@ -35,11 +39,20 @@
             #results[disabled] {
                 display: none;
             }
+
+            #time-span {
+                display: flex;
+                gap: 15px;
+            }
         </style>
         <section id="results" disabled>
             <h3>Resultados</h3>
+            <span id="time-span"></span>
+            <div>
+                <canvas id="myChart"></canvas>
+            </div>
         </section>
     </main>
-    <script src="./index.js"></script>
+    <script type="module" src="./index.js"></script>
 </body>
 </html>

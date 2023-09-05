@@ -1,5 +1,8 @@
+//import Chart from 'chart.js/auto'
+
 const form = document.getElementById("stress-form");
-const resultsSection = document.getElementById("results")
+const resultsSection = document.getElementById("results");
+const timeSpan = document.getElementById("time-span");
 
 /**
  * 
@@ -48,9 +51,15 @@ async function checkResult (id)
 
     const ul = document.createElement("ol");
 
-    const results = response.data.results.map((result, index) => renderResult(index, result));
+    const results = response.data.results.map((result, index) => {
+        result.index = index;
+        result.time = result.endTime - result.startTime;
+        return result;
+    });
 
-    ul.append(...results);
+    const resultList = results.map(result => renderResult(result));
+
+    ul.append(...resultList);
 
     const totalTimeText = document.createElement("span");
     
@@ -61,18 +70,20 @@ async function checkResult (id)
     const averageTime = totalTime / response.data.results.length;
     averageTimeText.textContent = `Média por teste: ${averageTime} ms`;
 
-    resultsSection.appendChild(totalTimeText);
-    resultsSection.appendChild(averageTimeText);
+    timeSpan.appendChild(totalTimeText);
+    timeSpan.appendChild(averageTimeText);
+
     resultsSection.appendChild(ul);
 
     resultsSection.removeAttribute("disabled");
+
+    renderGraph(response.data.results, totalTime);
 }
 
 /**
- * @param {number} index
- * @param {{startTime: number, endTime: number, value: {data: Array<string>, status: number, text: string}}} result 
+ * @param {{index: number, startTime: number, endTime: number, time: number, value: {data: Array<string>, status: number, text: string}}} result 
  */
-function renderResult (index, result)
+function renderResult (result)
 {
     const li = document.createElement("li");
 
@@ -87,10 +98,10 @@ function renderResult (index, result)
     const paramsSpan = document.createElement("span");
 
     const indexText = document.createElement("h4");
-    indexText.textContent = `${index+1})`;
+    indexText.textContent = `${result.index+1})`;
 
     const timeText = document.createElement("h5");
-    timeText.textContent = `Tempo gasto: ${result.endTime - result.startTime} ms`;
+    timeText.textContent = `Tempo gasto: ${result.time} ms`;
 
     const statusText = document.createElement("h5");
     statusText.textContent = `Status Code: ${result.value.status}`;
@@ -100,6 +111,60 @@ function renderResult (index, result)
     li.append(paramsSpan, resultList);
 
     return li;
+}
+
+/**
+ * @param {{index: number, startTime: number, endTime: number, time: number, value: {data: Array<string>, status: number, text: string}}[]} results
+ * @param {number} totalTime
+ */
+function renderGraph (results, totalTime)
+{
+    const ctx = document.getElementById('myChart');
+
+    const intervalTime = totalTime / 20;
+    /* results.sort((a, b) => {
+        if(a.time < b.time) return -1;
+        else if(a.time > b.time) return 1;
+        else if(a.time == b.time) return 0;
+    }); */
+
+    let intervals = new Array(20);
+    intervals = intervals.map((it, index) => {
+        const start = index * intervalTime;
+        const end = (index+1) * intervalTime;
+        const interval = {
+            start: start,
+            end: end,
+            values: results.filter(result => result.time >= start && result.time < end)
+        }
+        return interval;
+    });
+
+    const labels = intervals.map(interval => `${interval.start}`);
+    const datas = intervals.map(interval => `${interval.values.lenght}`);
+
+    console.log("Graph", labels, datas)
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Indice',
+                data: datas,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                },
+            },
+            width: "500px"
+        }
+    });
 }
 
 form.onsubmit = onSubmit;
