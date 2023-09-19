@@ -93,7 +93,8 @@ function renderResult (result)
     const li = document.createElement("li");
 
     const resultList = document.createElement("ul");
-    const resultTexts = result.value.data.map(txt => {
+    const resultTexts = (result.value.data ? result.value.data : ["Error"]).map(txt =>
+    {
         const resultText = document.createElement("li");
         resultText.textContent = txt;
         return resultText;

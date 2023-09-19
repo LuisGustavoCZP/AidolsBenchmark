@@ -1,7 +1,8 @@
 import Express from "express";
 import { data } from "../../data";
-import {aidolAPI} from "../../clients"
-import configs, {uuid} from "../../configs";
+import { aidolAPI } from "../../clients"
+import configs, { uuid } from "../../configs";
+import { BigSortedList } from "../../utils";
 
 /**
  * 
@@ -26,13 +27,15 @@ export async function createStress (req, res)
     };
 
     data.tests[id] = obj;
+    const sortedQuestions = new BigSortedList(configs.questions, total);
 
     async function test (index)
     {
         const startTime = Date.now();
-        const response = await aidolAPI.getAnswer(configs.botToken, "qual seu nome?");
-        results[index] = {value: response, startTime, endTime: Date.now()};
-        current++;
+        const question = sortedQuestions.iteration(index);
+        const response = await aidolAPI.getAnswer(configs.botToken, question);
+        results[index] = {test: question, value: response, startTime, endTime: Date.now()};
+        current++;  
         if(current == total)
         {
             obj.status = "completed";
