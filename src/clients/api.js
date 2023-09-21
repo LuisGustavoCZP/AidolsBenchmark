@@ -31,7 +31,7 @@ export class API
 
     async request (path, requestIni)
     {
-        requestIni.agent = this.httpsAgent;
+        //requestIni.agent = this.httpsAgent;
 
         const url = `${this.url}${path}`;
         try 

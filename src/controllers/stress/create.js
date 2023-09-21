@@ -33,7 +33,7 @@ export async function createStress (req, res)
     {
         const startTime = Date.now();
         const question = sortedQuestions.iteration(index);
-        const response = await aidolAPI.getAnswer(configs.botToken, question);
+        const response = await aidolAPI.getAnswer(configs.botID, question);
         results[index] = {test: question, value: response, startTime, endTime: Date.now()};
         current++;  
         if(current == total)

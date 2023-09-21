@@ -93,10 +93,17 @@ function renderResult (result)
     const li = document.createElement("li");
 
     const resultList = document.createElement("ul");
-    const resultTexts = (result.value.data ? result.value.data : ["Error"]).map(txt =>
+    const resultTexts = (result.value.data ? [result.value.data] : ["Error"]).map(response =>
     {
         const resultText = document.createElement("li");
-        resultText.textContent = txt;
+
+        const nodeIDEl = document.createElement("p");
+        nodeIDEl.textContent = response.answer_id;
+
+        const newQuestionIDEl = document.createElement("p");
+        newQuestionIDEl.textContent = response.new_question;
+
+        resultText.append(nodeIDEl, newQuestionIDEl);
         return resultText;
     });
     resultList.append(...resultTexts);

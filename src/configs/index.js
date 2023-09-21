@@ -1,8 +1,8 @@
 export { v4 as uuid } from "uuid";
 
 const configs = {
-    serverUrl: "https://aidolkids.com/api",
-    botToken: "5e94a654-cfe2-4322-9688-ce5d72b7e13b", //52ec42b1-3f50-4ce9-bfdb-9066da9a3940
+    serverUrl: "http://brbot.ip.tv/aidol_api/v1",
+    botID: 10, //52ec42b1-3f50-4ce9-bfdb-9066da9a3940
     bodyLimit: "50mb",
     questions: [
         "Qual é a possibilidade de garantir que todo software funcione corretamente?",
