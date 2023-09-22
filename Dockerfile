@@ -1,4 +1,6 @@
-FROM node:latest
+FROM node:lts
+
+WORKDIR /
 
 COPY package*.json ./
 
@@ -6,4 +8,4 @@ RUN npm install
 
 COPY . .
 
-CMD [ "node", "." ]
+CMD [ "npm", "start" ]
