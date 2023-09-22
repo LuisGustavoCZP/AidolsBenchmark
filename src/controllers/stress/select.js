@@ -12,7 +12,7 @@ export async function selectStress (req, res)
 {
     const {id} = req.params;
 
-    console.log(id, req.body);
+    //console.log(id, req.body);
     
     res.status(200).json({data: data.tests[id]});
 }

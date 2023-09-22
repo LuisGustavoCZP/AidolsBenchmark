@@ -13,7 +13,7 @@ export async function createStress (req, res)
 {
     const {requests : total} = req.body;
 
-    console.log(total, req.body);
+    //console.log(total, req.body);
 
     const id = uuid();
     let current = 0;
